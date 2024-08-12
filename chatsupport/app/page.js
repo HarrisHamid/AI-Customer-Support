@@ -1,7 +1,9 @@
 "use client";
 import { Box, Stack, TextField, Button } from "@mui/material";
 import { useState } from "react";
-
+import Image from "next/image";
+import "boxicons"; 
+import walle from "../public/walle.jpg";
 
 export default function Home() {
   const [messages, setMessages] = useState([
@@ -11,37 +13,37 @@ export default function Home() {
     },
   ]);
 
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
-  // Send current messages array to backend
   const sendMessage = async () => {
     setMessages((messages) => [
       ...messages,
       {
-        role: 'user',
+        role: "user",
         content: message,
       },
-      {role: 'assistant', content: 'Typing...'},
+      { role: "assistant", content: "" },
     ]);
-  
-  
-    const response = await fetch('/api/chat', {
-      method: 'POST',
+
+    setMessage(""); 
+
+    const response = await fetch("/api/chat", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify([...messages, { role: 'user', content: message }]),
+      body: JSON.stringify([...messages, { role: "user", content: message }]),
     });
-  
+
     if (!response.ok) {
-      console.error('Failed to fetch the chat response');
+      console.error("Failed to fetch the chat response");
       return;
     }
-  
+
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
-  
-    let result = '';
+
+    let result = "";
     return reader.read().then(function processText({ done, value }) {
       if (done) {
         return result;
@@ -61,71 +63,121 @@ export default function Home() {
       return reader.read().then(processText);
     });
   };
-  
+
   return (
     <Box
       width="100vw"
       height="100vh"
       display="flex"
-      flexDirection="column"
       justifyContent="center"
       alignItems="center"
+      bgcolor="#f0f0f0" 
     >
-      <Stack
-        direction="column"
-        width="600px"
-        height="700px"
-        border="1px solid black"
-        p={2}
-        spacing={3}
+      <Box
+        width="40vw"
+        height="70vh"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        border="1px solid #ccc" 
+        borderRadius={12} 
+        boxShadow="0px 4px 15px rgba(0, 0, 0, 0.1)" // Soft shadow to give a paper-like feel
+        bgcolor="white" 
       >
         <Stack
           direction="column"
-          spacing={2}
-          flexGrow={1}
-          overflow="auto"
-          maxHeight="100%"
+          width="100%" 
+          height="100%" 
+          p={3}
+          spacing={3}
         >
-          {messages.map((msg, index) => (
-            <Box
-              key={index}
-              display="flex"
-              justifyContent={
-                msg.role === "assistant" ? "flex-start" : "flex-end"
-              }
-            >
-              <Box
-                bgcolor={msg.role === "assistant" ? 'primary.main' : 'secondary.main'}
-                color="white"
-                p={2}
-                borderRadius={16}
-              >
-                {msg.content}
-              </Box>
-            </Box>
-          ))}
-        </Stack>
-        <Stack direction="row" spacing={2}>
-          <TextField
-            label="Message"
-            value={message}
-            fullWidth
-            onChange={(event) => setMessage(event.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                sendMessage();
-              }
-            }}
-          />
-          <Button 
-            variant="contained" 
-            color="primary"
-            onClick={sendMessage}
+          <Stack
+            direction="column"
+            spacing={2}
+            flexGrow={1}
+            overflow="auto"
+            maxHeight="100%"
           >
-            Send
-          </Button>
+            {messages.map((msg, index) => (
+              <Box
+                key={index}
+                display="flex"
+                justifyContent={
+                  msg.role === "assistant" ? "flex-start" : "flex-end"
+                }
+                alignItems="center" 
+              >
+                {msg.role === "assistant" && (
+                  <Box
+                    width={50} 
+                    height={50} 
+                    borderRadius="50%"
+                    overflow="hidden"
+                    mr={2} 
+                  >
+                    <Image
+                      src={walle}
+                      alt="WALL-E"
+                      width={50}
+                      height={50}
+                      objectFit="cover"
+                    />
+                  </Box>
+                )}
+                {msg.role === "user" && (
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    width={50} 
+                    height={50} 
+                    borderRadius="50%"
+                    bgcolor="grey"
+                    color="white"
+                    mr={2} 
+                  >
+                    <box-icon name="user" type="solid"></box-icon>
+                  </Box>
+                )}
+                <Box
+                  bgcolor={msg.role === "assistant" ? "primary.main" : "grey"}
+                  color="white"
+                  p={3} 
+                  borderRadius={16}
+                  maxWidth="75%"
+                >
+                  {msg.content}
+                </Box>
+              </Box>
+            ))}
+          </Stack>
+          <Stack direction="row" spacing={2}>
+            <TextField
+              label="Message"
+              value={message}
+              fullWidth
+              onChange={(event) => setMessage(event.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  sendMessage();
+                }
+              }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: "20px",
+                },
+              }}
+            />
+            <Button
+              variant="contained"
+              sx={{ backgroundColor: "#adcae6", borderRadius: "10px" }} 
+              onClick={sendMessage}
+            >
+              <box-icon name="send" color="white"></box-icon>
+            </Button>
+          </Stack>
         </Stack>
-      </Stack>
+      </Box>
     </Box>
   );
 }

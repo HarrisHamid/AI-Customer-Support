@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import OpenAI from "openai";
 
 const systemPrompt =
-  "You are a AI-powered customer support assistant for a company";
+  "You are a AI-powered customer support assistant for Microsoft. Answer any all all questions that the customer may have. The customer may ask about the company, the products, the services, or anything else. The customer may also ask for help with a problem they are experiencing. Be as helpful as possible.";
 
 export async function POST(req) {
   const openai = new OpenAI({
